@@ -1,0 +1,647 @@
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * books controller
+ */
+class books extends Front_Controller
+{
+
+	//--------------------------------------------------------------------
+
+
+	/**
+	 * Constructor
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->load->library('form_validation');		
+		$this->lang->load('books');
+		
+		$this->load->model('books_model', null, true);
+		$this->load->helper('books');		
+
+		//Assets::add_module_js('books', 'books.js');
+		Assets::add_module_css('books', 'books.css');
+	}
+	
+	public function index()
+	{
+		redirect('/');
+	}
+	
+	public function search($q = '', $offset=0)
+	{
+		if ($this->input->get('q'))
+			$q = $this->input->get('q');
+		
+		$q = urldecode($q);
+		$q = html_entity_decode($q);
+		
+		$itemsPerPage = 18;
+		$offset = (int)$offset;
+		
+		$total_records = false;
+		
+		$isbn = preg_replace('/[^0-9Xx]/s', '', $q);
+		
+		if (is_valid_isbn($isbn)) {
+			// do a db search for isbn
+			$result = $this->books_model->find($isbn);
+
+			if (empty($result))
+				// TO DO: search directly with API
+				$result = search_API_by_ISBN($isbn);
+			
+			if (!empty($result) && !$this->input->is_ajax_request())
+				redirect($result->ean.'/'.createSlug($result->name));
+		}
+		
+		if (!$total_records) {
+			$this->load->library('sphinxsearch');
+			
+			//echo $query;
+			$index = 'books';
+			
+			$weights = array(
+				'name' => 90,
+				'author' => 10,
+			);
+			
+			$this->sphinxsearch->SetMatchMode(SPH_MATCH_EXTENDED);
+			$this->sphinxsearch->SetFieldWeights($weights);
+			
+			/**
+			 * Prepare the query
+			 */
+			$keywords = $this->sphinxsearch->EscapeString($q);
+
+			// get column names from the weights
+			$columns = implode(',',array_keys($weights));
+			$query = '@('.$columns.') '.$keywords;
+			
+			/**
+			 * Find min value of sales rank which will be used in sorting
+			 */
+			$ranker = 'sum((4*lcs+2*(min_hit_pos==1)+exact_hit)*user_weight)*1000+bm25';
+
+			/**
+			 * Now do main search
+			 */
+			$this->sphinxsearch->SetLimits($offset, $itemsPerPage);
+			$this->sphinxsearch->SetArrayResult(false);
+			$this->sphinxsearch->SetSelect("*");
+			
+			//$cl->SetSortMode(SPH_SORT_EXPR,$expression);
+			$this->sphinxsearch->SetRankingMode(SPH_RANK_EXPR, $ranker);
+			//$cl->SetRankingMode(SPH_RANK_SPH04);
+			$this->sphinxsearch->SetSortMode(SPH_SORT_EXTENDED,'WEIGHT() DESC,length ASC');
+
+			$results = $this->sphinxsearch->Query($query, $index);
+			
+			if (empty($results) || !isset($results['matches']) || !count($results['matches'])) { 
+				// time to look on amazon - just one page
+				$results = search_API_by_Keywords($q);
+				if (!empty($results) && isset($results['matches']) && count($results['matches'])) {
+					$total_records = (int)$results['total_found'];
+				}
+			} else {
+				// save the query to retrieve fresh books
+				$this->load->model('search_query_model');
+				$this->search_query_model->insert(array('query'=>$q));
+			}
+			
+			if (!empty($results) && isset($results['matches']) && count($results['matches'])) { 
+				$total_records = (int)$results['total_found'] > 1000 ? 1000 : (int)$results['total_found'];
+				
+				$this->load->library('pagination');
+				$pager = array();
+				$pager['base_url'] = site_url("books/search/$q/");
+				$pager['total_rows'] = $total_records;
+				$pager['per_page'] = $itemsPerPage;
+				$pager['uri_segment']	= 4;
+				
+				$this->pagination->initialize($pager);
+				
+			} elseif (!is_valid_isbn($q)) {
+				// check for spelling mistakes
+				$this->load->helper('spell');
+				$check = spellCheck($q);
+				
+				if ($check != $q) {
+					Template::set('suggestion', $check);
+				}
+			}
+		}
+		
+		if ($this->input->is_ajax_request()) {
+			$api_results = array();
+			foreach ($results['matches'] as $result) {
+				$result = $result['attrs'];
+				if (isset($result['name_2']) && !empty($result['name_2'])) $result['name'] = $result['name_2'];
+				if (isset($result['author_2']) && !empty($result['author_2'])) $result['author'] = $result['author_2'];
+				
+				$result['name'] = substr($result['name'],0,50).(strlen($result['name']) > 50 ? '...' : '');
+				$result['description'] = substr(strip_tags($result['description']),0,100).(strlen(strip_tags($result['description'])) > 100 ? '...' : '');
+				$result['cdn_image'] = book_image_url($result['isbn'], $result['cdn_image'], array(80,106));
+				$api_results[] = $result;
+			}
+			
+			$response = array(
+				'total_records' => $total_records,
+				'data' => $api_results
+			);
+		
+			echo json_encode($response); //")]}',#chr( 10 )#".
+			die();
+		}
+		
+		Template::set('q', $q);
+		Template::set('total_records', $total_records);
+		Template::set('results', $results);
+		Template::render();
+	}
+	
+	public function details($isbn='')
+	{
+		$details = $this->books_model->find($isbn);
+		if (empty($details)) {
+			show_404();
+		}
+		
+		add_recently_viewed($details->ean, $details->name);
+		
+		$this->load->helper('date');
+		
+		$manual_update = false;
+		if (isset($_GET['update-price'])) {
+			if (isset($_GET['super-force']) || strtotime($details->timestamp) < time()-21600)
+				$manual_update = true;
+		}
+		
+		if (date_difference($details->timestamp, 'today', 'day', true) > 14 || $manual_update) {
+			// remove existing prices and refresh
+			$this->load->model('books_prices_model');
+			$this->books_prices_model->delete($isbn);
+			
+			$this->books_model->update($isbn, array('timestamp'=>date('Y-m-d H:i:s')));
+		}
+		
+		if ($manual_update)
+			redirect($details->ean.'/'.createSlug($details->name));
+		
+		//fetch engines		
+		$this->load->model('bookstores/stores_model');
+		$stores = $this->stores_model->join('stores_countries', 'stores_countries.store_id = stores.id')->where('stores.api_lib !=', '')->where('stores_countries.country_iso', $this->session->userdata('country'))->find_all();
+		
+		$available_stores = array();
+		if (!empty($stores) && count($stores)) {
+			foreach ($stores as $store) {
+				$available_stores[] = $store->id;
+			}
+		}
+				
+		//fetch book prices
+		$fetch_price = false;
+		$store_prices = get_book_prices($isbn);
+		
+		if (!empty($store_prices) && count($store_prices)) {
+			foreach ($store_prices as $store_id=>$price_data) {
+				if (!in_array($store_id, $available_stores)) {
+					unset($store_prices['new'][$store_id]);
+					unset($store_prices['used'][$store_id]);
+				}
+			}
+		}
+		
+		if (empty($store_prices['new']) || count($store_prices['new']) < count($stores)) {
+			$fetch_price = true;
+			$this->books_model->update($isbn, array('timestamp'=>date('Y-m-d H:i:s')));
+		}
+		
+		if ($this->input->is_ajax_request()) {	
+			$details = (array)$details;
+			$details['cdn_image'] = book_image_url($details['isbn'], $details['cdn_image']);		
+			$response = array(
+				'stores' => $stores,
+				'fetch_price' => $fetch_price,
+				'new_prices' => isset($store_prices['new']) ? $store_prices['new'] : array(),
+				'used_prices' => isset($store_prices['used']) ? $store_prices['used'] : array(),
+				'price_updated_at' => $fetch_price ? '' : relative_time($details['timestamp']),
+				'data' => $details
+			);
+		
+			echo json_encode($response); //")]}',#chr( 10 )#".
+			die();
+		}	
+		
+		Template::set('stores', $stores);
+		Template::set('fetch_price', $fetch_price);		
+		Template::set('store_prices', $store_prices);
+		
+		Template::set('details', (array)$details);
+		Template::render();
+	}
+	
+	public function fetcbByISBN()
+	{
+		if (!$this->input->is_ajax_request())
+			redirect('books');
+			
+		$response = array();
+	
+		$ean = $this->input->post('ean');
+		if (empty($ean)) {
+			$response['error'] = 'You must fill in ISBN';
+			die(json_encode($response));
+		}
+		
+		$details = $this->books_model->find($ean);
+		if (empty($details)) {
+			//TODO: verify and save the isbn to retrieval queue.
+		
+			$response['error'] = 'We could not find this book in our database. This will be queued for retrieval.';
+			die(json_encode($response));
+		}
+		
+		echo json_encode($details);
+	}
+	
+	public function autocomplete()
+	{		
+		if (!$this->input->is_ajax_request())
+			redirect('books');		
+			
+		if (!$this->input->get('term'))
+			exit;
+			
+		$q = trim(strtolower($this->input->get('term')));
+			
+		$this->load->library('sphinxsearch');
+		
+		$this->sphinxsearch->setSelect('isbn, name');
+		$this->sphinxsearch->SetSortMode(SPH_SORT_EXTENDED, "length ASC");
+		$this->sphinxsearch->setFieldWeights(array('name'=>100));
+		$this->sphinxsearch->SetLimits(0, 10);
+		$this->sphinxsearch->SetRankingMode(SPH_RANK_WORDCOUNT);
+		$query = $this->sphinxsearch->escapeString($q);
+		$query = '^'.$query.'*$';
+		
+		$results = $this->sphinxsearch->query($query, 'autocomplete');
+		
+		$response = array();
+
+		if (!empty($results) && count($results['matches'])) {
+			foreach ($results['matches'] as $result) { $result = $result['attrs'];
+				array_push($response, array("id"=>$result['isbn'], "label"=>html_entity_decode($result['name'], ENT_QUOTES), "value" => html_entity_decode($result['name'], ENT_QUOTES)));
+			}
+		}
+		
+		// json_encode is available in PHP 5.2 and above, or you can install a PECL module in earlier versions
+		echo json_encode($response);
+	}
+	
+	public function fetch_price($isbn='', $data_only=false)
+	{
+		if (empty($isbn)) // || !$this->input->is_ajax_request()
+			exit;
+                
+                if (strstr($isbn, '_')) {
+                    $vars = explode('_', $isbn);
+                    $isbn = $vars[0];
+                }
+						
+		$details = $this->books_model->find($isbn);
+		if (empty($details))
+			exit;
+			
+		$this->load->model('bookstores/stores_model');
+		$stores = $this->stores_model->join('stores_countries', 'stores_countries.store_id = stores.id')->where('stores.api_lib !=', '')->where('stores_countries.country_iso', $this->session->userdata('country'))->find_all();
+		
+		$available_stores = array();
+		if (!empty($stores) && count($stores)) {
+			foreach ($stores as $store) {
+				$available_stores[] = $store->id;
+			}
+		}
+		
+		$store_prices = get_book_prices($isbn);
+		
+		$count = 0;
+		$api = array();
+		if (is_array($stores)) {
+			foreach ($stores as $store) {
+				if ($count >= 5) break;
+			
+				if (!isset($store_prices[$store->id]) && in_array($store->id, $vars)) {
+					$lib = $store->api_lib;					
+					$api[] = site_url('books/fetchPrice/'.$isbn.'/'.$lib.'/'.$_SERVER['REMOTE_ADDR']);
+				
+					$count++;
+				}
+			}
+		}
+			
+		if (count($api)) {
+			$this->load->helper('curl');
+			$r = multiRequest($api);
+			
+			$store_prices = get_book_prices($isbn);
+		}
+		
+		//print_r($r);
+		
+		if (!empty($store_prices) && count($store_prices)) {
+			foreach ($store_prices as $store_id=>$price_data) {
+				if (!in_array($store_id, $available_stores)) {
+					unset($store_prices['new'][$store_id]);
+					unset($store_prices['used'][$store_id]);
+				}
+			}
+		}
+		
+		if ($data_only) {
+			$this->load->helper('date');
+			
+			$response = array(
+				'stores' => $stores,
+				'fetch_price' => false,
+				'new_prices' => isset($store_prices['new']) ? $store_prices['new'] : array(),
+				'used_prices' => isset($store_prices['used']) ? $store_prices['used'] : array(),
+				'price_updated_at' => relative_time($details->timestamp),
+			);
+		
+			echo json_encode($response); //")]}',#chr( 10 )#".
+			die();
+		} else {		
+			Template::set('details', (array)$details);
+			Template::set('stores', $stores);	
+			Template::set('fetch_price', false);	
+			Template::set('store_prices', $store_prices);
+			
+			Template::set_view('partials/book_prices');
+			Template::render('ajax');
+		}
+	}
+	
+	public function fetchPrice($isbn, $lib, $user_ip)
+	{
+		// TO DO: validate if referrer is the server itself
+		
+		if (empty($lib))
+			exit;
+		
+		$this->load->model('bookstores/stores_model');
+		$store = $this->stores_model->find_by('api_lib', $lib);
+		
+		if (empty($store))
+			exit;
+		
+		$this->load->library($lib);		
+		$this->load->model('books_prices_model');
+		
+		$this->books_prices_model->where('engine', $store->id)->delete($isbn);
+		
+		$price_data = $this->$lib->fetchPrice($isbn, $user_ip);
+		$store_price = new stdClass;		
+		if (isset($price_data[$isbn]) && is_array($price_data[$isbn])) {
+			$processed = array();
+			foreach ($price_data[$isbn] as $price) {
+				if (!isset($processed[$price['condition']]) || !in_array($isbn, $processed[$price['condition']])) {
+					$this->books_prices_model->insert(array(
+							'ean'		=> $isbn,
+							'engine'	=> $store->id,
+							'condition'	=> $price['condition'],
+							'price'		=> (float)$price['price'],
+							'shipping'	=> 0,
+							'currency'	=> $price['currency'],
+							'delivery'	=> $price['delivery'],
+							'target_url'=> $price['target_url']
+					));
+                                        
+                                        echo $this->db->_error_message();
+					
+					$processed[$price['condition']][] = $isbn;
+				}
+			}
+		} else {
+			$this->books_prices_model->insert(array(
+					'ean'		=> $isbn,
+					'engine'	=> $store->id,
+					'price'		=> 0,
+					'shipping'	=> 0,
+					'condition'	=> 'new',
+					'currency'	=> 'USD'
+			));
+		}	
+	}	
+        
+        public function fetchMissingBestsellers()
+        {
+            $this->load->model('books/bestsellers_model');
+            $missing = $this->bestsellers_model->list_missing();
+            
+            if (empty($missing))
+                exit;
+            
+            $isbns = array();
+            foreach ($missing as $isbn )
+            {
+                $isbns[] = $isbn->ean;
+            }
+            
+            $this->load->library('amazon');
+            
+            $isbns = array_unique($isbns);
+            $sets = array_chunk($isbns, 10);
+            foreach ($sets as $set) {
+                $data = $this->amazon->fetch(implode(',', $set));
+                if (is_array($data) && !empty($data)) {
+                    foreach ($data as $details) {
+                        if (empty($details['ean']) || $details['book_format'] != 'book')
+                            continue;
+                        
+                        $this->books_model->insert($details);
+                    }
+                }
+                sleep(3);
+            }
+        }
+
+	//--------------------------------------------------------------------
+	
+	// cron jobs
+	public function cron($action='fetchBookDetails') {
+		if (!defined('CMD')) {
+			redirect('/');
+			exit;
+		}
+			
+		switch($action) {
+			// get all details about the book in database
+			case 'fetchBookDetails':
+				$i = 0;
+				while(true) {
+					if ($i >= 12) break;
+					$time_start = time();
+					
+					// load 10 ean from books table which are not processed
+					$books = $this->books_model->select('books.ean, books.cdn_image')->join('image_queue', 'books.ean = image_queue.ean', 'left')->where('image_queue.ean IS NULL')->where('books.processed', '0')->where('books.book_format !=', 'ebook')->limit('10')->find_all();
+					
+					// save the books into process queue
+					$pool = array();
+					$batch_id = time();
+					if ($books) {
+						$image_exists = $isbns = array();
+						foreach ($books as $book) {
+							$pool[] = array('ean'=>$book->ean, 'batch_id'=>$batch_id);
+							$isbns[] = $book->ean;
+							if (!empty($book->cdn_image) && ($book->cdn_image != '-')) {
+								$image_exists[] = $book->ean;
+							}
+						}
+						
+						if (count($pool)) {
+							$this->load->model('image_queue_model');
+							$this->image_queue_model->insert_batch($pool);						
+							
+							// fetch data about each of the books
+							$this->load->library('amazon');
+							$data = $this->amazon->fetchBooks(implode(',', $isbns), $image_exists);
+							
+							$updated = $nodes = $similar = array();
+							if (count($data)) {
+								$this->load->model('books/books_model');
+								foreach ($data as $book) {
+									if (!isset($book['ean']) || empty($book['ean']))
+										continue;
+										
+									$nodes = $book['nodes'];
+									$similar = $book['similar'];
+									$other_eans = isset($book['other_eans']) ? $book['other_eans'] : array();
+									
+									unset($book['nodes']);
+									unset($book['similar']);
+									unset($book['other_eans']);
+									
+									$book['processed'] = 1;									
+									
+									$this->books_model->update($book['ean'], $book);
+									
+									// setup nodes
+									if (count($nodes)) {
+										$this->load->model('nodes_model');
+										
+										$this->load->model('books_nodes_model');
+										$this->books_nodes_model->delete_where(array('ean'=>$book['ean']));
+										
+										foreach ($nodes as $node) {
+											$parent_id = 0;
+											if (is_array($node['parent']) && count($node['parent'])) {
+												foreach ($node['parent'] as $parent) {
+													if (!$this->nodes_model->count_by('id', $parent['id'])) {
+														$this->nodes_model->insert(array('id'=>$parent['id'], 'name'=>$parent['name'], 'parent_id'=>0));
+													}
+													
+													$parent_id = $parent['id'];
+													break;
+												}
+											}
+											
+											if (!$this->nodes_model->count_by('id', $node['id'])) {
+												$this->nodes_model->insert(array('id'=>$node['id'], 'name'=>$node['name'], 'parent_id'=>$parent_id));
+											} else {
+												$this->nodes_model->update($node['id'], array('name'=>$node['name'], 'parent_id'=>$parent_id));
+											}
+											
+											if (is_array($node['children']) && count($node['children'])) {
+												foreach ($node['children'] as $child) {
+													if (!$this->nodes_model->count_by('id', $child['id'])) {
+														$this->nodes_model->insert(array('id'=>$child['id'], 'name'=>$child['name'], 'parent_id'=>$node['id']));
+													}
+												}
+											}										
+											
+											$this->books_nodes_model->insert(array('ean'=>$book['ean'], 'node_id'=>$node['id']));
+										}
+									}				
+							
+									// setup similar
+									$similar_batch = array();
+									if (count($similar)) {
+										$this->load->model('books_similar_model');
+										$this->books_similar_model->delete_where(array('similar_for'=>$book['ean']));
+										
+										foreach ($similar as $similar_book) {
+											$similar_batch[] = array('ASIN'=>$similar_book['ASIN'], 'name'=>$similar_book['name'], 'similar_for'=>$book['ean']);
+										}
+										
+										if (count($similar_batch)) { 											
+											$this->books_similar_model->insert_batch($similar_batch);
+										}
+									}
+									
+									$other_eans_batch = array();
+									if (count($other_eans)) {
+										$this->load->model('books_edition_model');
+										$this->books_edition_model->delete_where(array('ean'=>$book['ean']));
+										
+										foreach ($other_eans as $other_ean) {
+											$other_eans_batch[] = array('ean'=>$book['ean'], 'edition'=>$other_ean);
+										}
+										
+										if (count($other_eans_batch)) { 											
+											$this->books_edition_model->insert_batch($other_eans_batch);
+										}
+									}					
+									
+									$updated[] = $book['ean'];
+								}
+							}
+							
+							$update_batch = array();
+							foreach ($isbns as $isbn) {
+								if (!in_array($isbn, $updated)) {
+									$update_batch[] = array('ean'=>$isbn, 'processed'=>1);
+								}
+							}
+							
+							if (count($update_batch)) {
+								$this->books_model->update_batch($update_batch, 'ean');
+							}				
+							
+							$this->image_queue_model->delete_where(array('batch_id'=>$batch_id));
+						}					
+					}
+					
+					$time_diff = time() - $time_start;		
+					if ($time_diff < 5) {
+						sleep(5 - $time_diff);
+					}
+					
+					$i++;
+					echo $i.'<br />'; flush(); ob_flush();
+				}
+				
+				break;
+			case 'fetchBooks':
+				$this->load->model('search_query_model');
+				// get one query at a time
+				$query = $this->search_query_model->limit(1)->order_by('created_on', 'DESC')->group_by('query')->find_all();
+				if (!empty($query)) {
+					foreach ($query as $q) {
+						search_API_by_Keywords($q->query);
+						$this->search_query_model->delete_where('query', $q->query);		
+					}
+				}
+				
+				break;
+		}
+		
+		
+		exit;
+	}
+}

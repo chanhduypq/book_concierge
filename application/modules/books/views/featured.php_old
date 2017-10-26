@@ -1,0 +1,25 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+$has_records	= isset($records) && is_array($records) && count($records);
+
+if ($has_records):
+?>
+<div class="<?php if (!$for_small_screen) echo 'visible-lg ';?> featured-books">
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+			<h2 class="text-center">Hot this Week</h2>
+		</div>
+	</div>
+	<div class="row books">
+	<?php $i = 0; $open = false; foreach ($records as $record) : ?>
+		<?php if (!($i%2)) { $open = true; echo '
+		<div class="container-xs-height">
+			<div class="row-xs-height">'; }  ?>		
+		<div class="col-xs-6 <?php if (!$i) echo 'col-md-offset-1 '; ?>col-md-2 col-xs-height text-center">
+			<a href="<?php echo site_url($record->ean.'/'.createSlug($record->name))?>" class="thumbnail" title="<?= $record->name ?>"><img src="<?php echo book_image_url($record->ean, $record->cdn_image) ?>" class="img-thumbnail img-responsive" /></a>
+		</div>
+		<?php if (!(($i+1)%2)) {$open = false; echo '</div></div>';}  ?>
+	<?php $i++; endforeach; ?>
+		<?php if ($open) {$open = false; echo '<div class="col-xs-6"></div></div></div>';}  ?>
+	</div>
+</div>
+<?php endif; ?>

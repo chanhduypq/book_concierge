@@ -1,0 +1,50 @@
+		<div class="row text-center" style="margin-bottom:25px;">
+			<div class="col-lg-12">
+				<!--<h2><i class="fa fa-book"></i> Results for "<?php echo $q ?>"</h2>
+				<div class="line"></div>-->
+				<?php if ($total_records) { ?>
+				<p><h2><i class="fa fa-search"></i> <?= $total_records ?> results for "<?php echo $q ?>"</h2></p>
+				<?php } ?>
+			</div>
+		</div>
+		<?php if ($total_records) { ?>
+			<?php foreach ($results['matches'] as $result) { $result = $result['attrs']; ?>
+			<?php
+				if (isset($result['name_2']) && !empty($result['name_2'])) $result['name'] = $result['name_2'];
+				if (isset($result['author_2']) && !empty($result['author_2'])) $result['author'] = $result['author_2'];
+			?>
+			<?php
+			if (empty($result['cdn_image'])) {
+				$result['cdn_image'] = get_book_image($result['isbn']);
+			}
+			?>
+			<div class="row result">
+				<div class="col-sm-2 col-xs-4">
+                                    <a href="<?php echo site_url($result['isbn'].'/'.createSlug($result['name']))?>" target="_blank"><img class="img-responsive img-thumbnail" src="<?php echo book_image_url($result['isbn'], $result['cdn_image']) ?>" alt="<?php echo $result['name'] ?>"></a>
+				</div>
+				<div class="col-sm-offset-1 col-sm-9 col-xs-12">
+					<h2><a href="<?php echo site_url($result['isbn'].'/'.createSlug($result['name']))?>" target="_blank"><?php echo $result['name'] ?></a></h2>
+					<?php if (!empty($result['author'])) { ?><h3>By: <?php echo $result['author'] ?></h3><?php } ?>
+					<p class="lead"><?php echo shorten_string($result['description'], 100) ?></p>
+					<p>ISBN: <?php echo $result['isbn'] ?></p>
+				</div>
+			</div>
+			<?php } ?>
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="text-center">
+						<?php echo $this->pagination->create_links(); ?>
+					</div>
+				</div>
+			</div>
+		<?php } else { ?>
+		<div class="row text-center">
+			<div class="col-lg-12">
+				<h3>Sorry! We could not find any book matching your keyword</h3>
+				<?php if (isset($suggestion)) { ?>
+				<p>Did you mean "<a href="<?php echo site_url('books/search/'.urlencode($suggestion)) ?>"><?= $suggestion ?></a>"?</p>
+				<?php } ?>
+				<p><strong>Help us improve our search.</strong><br /><a href="http://www.amazon.com/s/ref=readoutlet-20?url=search-alias%3Dstripbooks&field-keywords=<?php echo urlencode($q) ?>" target="_blank">Click here to find the book on amazon.com</a><br />and use the ISBN instead to compare prices.</p>
+			</div>
+		</div>
+		<?php } ?>

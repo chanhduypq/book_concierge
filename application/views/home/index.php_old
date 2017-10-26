@@ -1,0 +1,29 @@
+	<div id="ww" class="search-box">
+		<div class="container">
+			<h2 class="text-center">Find the best price ship to your door step</h2>
+			<!--<?php if (function_exists('show_featured')) show_featured(); ?>-->
+			
+			<div class="row">
+				<div class="col-xs-12 col-sm-10 col-sm-offset-1 cta-mail">
+					<div class="mc_embed_signup">
+					<?php echo form_open('books/search', 'method="get" id="search-form"') ?>
+						<div class="input-group input-group-lg">
+							<input class="form-control" placeholder="Search by ISBN, Title or Author" type="text" name="q" id="search_box">
+							<span class="input-group-btn">
+								<button type="submit" class="btn btn-default search_btn">Search</button>
+							</span>		
+						</div>									
+					<?php echo form_close(); ?>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-5  col-sm-offset-1">
+					
+				</div>
+				<div class="col-sm-6 text-right visible-md visible-sm visible-xs">
+					<!--<p><a href="<?php echo site_url('hot-this-week'); ?>">Hot this Week</a></p>-->
+				</div>
+			</div>
+		</div>
+	</div>

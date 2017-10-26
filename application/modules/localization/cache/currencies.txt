@@ -1,0 +1,1 @@
+a:9:{s:3:"AUD";s:3:"AUD";s:3:"GBP";s:3:"GBP";s:3:"HKD";s:3:"HKD";s:3:"IDR";s:3:"IDR";s:3:"INR";s:3:"INR";s:3:"MYR";s:3:"MYR";s:3:"SGD";s:3:"SGD";s:3:"THB";s:3:"THB";s:3:"USD";s:3:"USD";}

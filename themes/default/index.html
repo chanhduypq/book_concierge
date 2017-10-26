@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Book Concierge</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/ProximaNova-Bold/styles.css" type="text/css" />
+    <link rel="stylesheet" href="css/ProximaNova-Extrabld/styles.css" type="text/css" />
+    <link rel="stylesheet" href="css/ProximaNova-Black/styles.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles.css" type="text/css" />
+
+    <!--[if lt IE 9]>
+        <script src="http://css3-mediaqueries-js.googlecode.com/files/css3-mediaqueries.js"></script>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<header class="page-header clearfix">
+    <div class="page-header-wrapper">
+        <div class="page-header-logo clearfix">
+            <a href="#"><img src="images/logo.png" alt="Book Concierge"></a>
+        </div>
+        <nav class="nav">
+            <a class="burger" href="#">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <ul class="main-menu">
+                <li><a href="#">CHILDREN BOOK</a></li>
+                <li><a href="#">MANAGEMENT BOOK</a></li>
+                <li><a href="#">RELIGION/INSPIRATION</a></li>
+                <li><a href="#">CRIME & MISTERY</a></li>
+                <li><a href="#">RECENTLY VIEWED</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="search">
+    <div class="search-wrapper">
+        <div class="search-header">
+            <span class="search-header-text">FIND THE BEST PRICE SHIP TO YOUR DOOR STEPS</span>
+        </div>
+        <div class="search-form">
+            <form action="POST">
+                <input type="text" class="search-form-field" placeholder="Write here ISBN, Title or Author">
+                <button type="button" class="search-form-btn">SEARCH</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="partners clearfix">
+    <div class="partners-wrapper">
+        <div class="partners-left">
+            <img src="images/part-1.png" alt="">
+            <img src="images/part-2.png" alt="">
+            <img src="images/part-3.png" alt="">
+            <img src="images/part-4.png" alt="">
+            <img src="images/part-6.png" alt="">
+            <img src="images/part-7.png" alt="">
+            <img src="images/part-8.png" alt="">
+            <img src="images/part-9.png" alt="">
+        </div>
+        <div class="partners-right">
+            <img src="images/part-5.png" alt="">
+        </div>
+    </div>
+</div>
+<div class="bestsellers">
+    <div class="bestsellers-wrapper">
+        <ul class="bestsellers-book">
+            <li><a href="#"><img src="images/book-1.png" alt="Book"></a></li>
+            <li><a href="#"><img src="images/book-2.png" alt="Book"></a></li>
+            <li><a href="#"><img src="images/book-3.png" alt="Book"></a></li>
+            <li><a href="#"><img src="images/book-4.png" alt="Book"></a></li>
+            <li><a href="#"><img src="images/book-5.png" alt="Book"></a></li>
+        </ul>
+    </div>
+
+</div>
+<footer class="page-footer">
+    <div class="page-footer-wrapper">
+        <span> © 2015 - Book Concierge</span>
+    </div>
+</footer>
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript">
+    jQuery(function($){
+        $('.burger').click(function(){
+            $('.main-menu').slideToggle();
+        });
+    });
+</script>
+</body>
+</html>

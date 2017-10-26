@@ -1,0 +1,1 @@
+<?php if (function_exists('show_featured')) show_featured(10, true); ?>
