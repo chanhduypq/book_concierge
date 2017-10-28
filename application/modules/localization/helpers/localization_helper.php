@@ -59,7 +59,12 @@ if (!function_exists('localize_options')) {
 		$default_country = $CI->session->userdata('country') ? $CI->session->userdata('country') : 'US';
 		$default_currency = $CI->session->userdata('currency') ? $CI->session->userdata('currency') : 'USD';
 		
-		if (count($countries) > 1) {
+                $country = $CI->session->userdata('country_iso');
+                if (is_string($country) && trim($country) != "") {
+                    $default_country = $country;
+                }
+
+                if (count($countries) > 0) {
 			echo '
 				<div class="form-group">
 					'.form_dropdown('country', $countries, $default_country, '', ' class="form-control" onChange="document.cc_selector.submit()"').'

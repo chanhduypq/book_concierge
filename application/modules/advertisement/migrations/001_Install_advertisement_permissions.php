@@ -10,7 +10,7 @@ class Migration_Install_shippingrates_permissions extends Migration
 	 */
 	private $permission_values = array(
 		array(
-			'name' => 'Shippingrates.Settings.View',
+			'name' => 'Advertisement.Settings.View',
 			'description' => '',
 			'status' => 'active',
 		),

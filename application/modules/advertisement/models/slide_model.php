@@ -1,8 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Shippingrates_model extends BF_Model {
+class Slide_model extends BF_Model {
 
-	protected $table_name	= "shipping_rates";
+	protected $table_name	= "country_slides";
 	protected $key			= "";
 	protected $soft_deletes	= false;
 	protected $date_format	= "datetime";
@@ -51,9 +51,4 @@ class Shippingrates_model extends BF_Model {
 
 	//--------------------------------------------------------------------
 	
-	public function find_all() {
-		$this->join('states', 'region_id = id', 'left');
-		
-		return parent::find_all();
-	}
 }

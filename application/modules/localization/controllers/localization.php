@@ -22,8 +22,22 @@ class localization extends Front_Controller
 	
 	public function switcher($country='', $currency='')
 	{
-		$this->load->library('user_agent');
-		if ($this->input->post() && $this->agent->is_referral())
+            $this->load->library('user_agent');
+            
+            $preUrl = $this->agent->referrer();
+            $preUrl = explode('//', $preUrl);
+            $preUrl = $preUrl[1];
+            $preUrl = explode("/", $preUrl);
+
+            if (count($preUrl) == 1 || $preUrl[1] == '') {
+                $this->load->library('session');
+                $this->session->set_userdata('country_iso', $this->input->post('country'));
+                redirect('/');
+                return;
+            }
+
+
+            if ($this->input->post() && $this->agent->is_referral())
 		{			
 			$this->load->model('country_model');
 			$this->load->model('currency_model');

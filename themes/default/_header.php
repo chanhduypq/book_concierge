@@ -1,6 +1,6 @@
 <?php
     Assets::add_js( array('jquery-1.11.0.min.js', 'jquery-ui-1.10.4.custom.min.js', 'bootstrap.min.js', 'jquery.smooth-scroll.min.js', 'nprogress.js', 'mp.mansory.js', 'owl.carousel.min.js', 'main.js' ) );
-    Assets::add_css( array('bootstrap.min.css', 'bootstrap-col-height.css', 'jquery-ui-1.10.3.custom.min.css', 'font-awesome/css/font-awesome.css', 'nprogress.css', 'normalize.css', 'owl/owl.carousel.min.css', 'owl/owl.theme.default.min.css','styles.css'));
+    Assets::add_css( array('bootstrap.min.css', 'bootstrap-col-height.css', 'jquery-ui-1.10.3.custom.min.css', 'font-awesome/css/font-awesome.css', 'nprogress.css', 'normalize.css', 'owl/owl.carousel.min.css', 'owl/owl.theme.default.min.css','styles.css','slide.css','left_right.css'));
     
     //'ProximaNova-Bold/styles.css', 'ProximaNova-Extrabld/styles.css','ProximaNova-Black/styles.css'
 ?>

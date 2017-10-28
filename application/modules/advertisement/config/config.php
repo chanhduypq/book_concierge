@@ -2,7 +2,7 @@
 
 $config['module_config'] = array(
 	'description'	=> 'Shipping Rates',
-	'name'		=> 'shippingrates',
+	'name'		=> 'advertisement',
 	'version'		=> '0.0.1',
 	'author'		=> 'admin'
 );

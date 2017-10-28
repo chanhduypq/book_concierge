@@ -62,6 +62,65 @@ class Home extends CI_Controller
             
             Template::set('category', $category);
             Template::set('category_id', $available_categories[$category]);
+            
+            $this->load->model('advertisement/slide_model', null, true);
+            $this->load->model('advertisement/book_country_model', null, true);
+            
+            $this->load->library('session');
+            
+            if($this->session->userdata('country_iso')){
+                $country=$this->session->userdata('country_iso');
+            }
+            else{
+                $this->load->model('localization/country_model');
+                $countries_data = $this->country_model->order_by('group')->order_by('name')->find_all();
+                $country=$countries_data[0]->iso;
+            }
+            
+            $slides = $this->slide_model->find_all_by("country_iso", $country);
+            $slideTitles = array();
+            $slideContents = array();
+            $slideImages = array();
+            if (is_array($slides) && count($slides) > 0) {
+                foreach ($slides as $slide) {
+                    $slideTitles[] = $slide->title;
+                    $slideContents[] = $slide->content;
+                    $slideImages[] = $slide->image;
+                }
+            } else {
+                for ($i = 0; $i < 3; $i++) {
+                    $slideTitles[] = '';
+                    $slideContents[] = '';
+                    $slideImages[] = '';
+                }
+            }
+
+            Template::set('slideTitles', $slideTitles);
+            Template::set('slideContents', $slideContents);
+            Template::set('slideImages', $slideImages);
+
+            $books = $this->book_country_model->find_all_by("country_iso", $country);
+            if (is_array($books) && count($books) > 0) {
+                foreach ($books as $book) {
+                    if (strtolower(trim($book->left_right)) == 'left') {
+                        $leftTitle = $book->title;
+                        $leftImageCurrent = $book->image;
+                        $leftAuthor = $book->author;
+                    } else if (strtolower(trim($book->left_right)) == 'right') {
+                        $rightTitle = $book->title;
+                        $rightImageCurrent = $book->image;
+                        $rightAuthor = $book->author;
+                    }
+                }
+            } else {
+                $leftTitle = $leftImageCurrent = $leftAuthor = $rightTitle = $rightImageCurrent = $rightAuthor = '';
+            }
+            Template::set('leftTitle', $leftTitle);
+            Template::set('leftImageCurrent', $leftImageCurrent);
+            Template::set('leftAuthor', $leftAuthor);
+            Template::set('rightTitle', $rightTitle);
+            Template::set('rightImageCurrent', $rightImageCurrent);
+            Template::set('rightAuthor', $rightAuthor);
 
             Template::render();
 	}//end index()

@@ -1,0 +1,160 @@
+#myCarousel{
+    background-image: url(../images/20151028011953301.jpg);
+    background-size: cover;
+}
+#myCarousel .one{
+    min-width: 24%;
+}
+#myCarousel .two{
+    max-width: 38%;
+    min-width: 38%;
+}
+#myCarousel .three{
+    min-width: 38%;
+}
+#myCarousel .carousel-indicators{
+    left: 43%;
+    position: relative !important;
+    margin-top: 50px !important;
+    /*margin: 0 auto !important;*/
+    /*text-align: center !important;*/
+}
+#myCarousel .left{
+    float: left;    
+}
+#myCarousel .item > div{
+    padding: 10px;
+}
+#myCarousel .left label{
+    color:#ffaf00;
+}
+#myCarousel .left p{
+    max-width: 350px;
+    color: white;
+    font-style: italic;
+    font-size: 17px;
+}
+
+#myCarousel, #myCarousel div,#myCarousel ol{
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+#myCarousel .item hr {
+    border-top: 2px solid white;
+    margin-top: 25px;
+    width: 100%;
+    float: right;
+}
+#myCarousel .item img{
+    width: 100%;
+}
+#myCarousel .item .title{
+    color: white;
+    font-size: 25px;
+    float: left;
+    width: 45%;
+    font-weight: bold;
+}
+#myCarousel .item .hr{
+    float: left;
+    width: 55%;
+    left: 0;
+}
+
+#myCarousel .item .img{
+    width: 30%;
+}
+#myCarousel .item .text{
+    width: 70%;
+}
+
+@media screen and (max-width: 736px){
+    #myCarousel .item img{
+        width: 100px;
+    }
+    #myCarousel .item .img{
+        width: 40%;
+    }
+    #myCarousel .item .text{
+        width: 60%;
+    }
+    
+    #myCarousel .item .title{
+        width: 50%;
+    }
+    #myCarousel .item .hr{
+        width: 50%;
+    }
+    
+    #myCarousel .one{
+        min-width: 25% !important;
+    }
+    #myCarousel .two{
+        max-width: 50% !important;
+        min-width: 50% !important;
+    }
+    #myCarousel .three{
+        min-width: 25% !important;
+    }
+}
+
+@media screen and (max-width: 640px){
+    #myCarousel .item img{
+        width: 100px;
+    }
+    #myCarousel .item .img{
+        width: 50%;
+    }
+    #myCarousel .item .text{
+        width: 50%;
+    }
+    
+    #myCarousel .item .title{
+        width: 65%;
+    }
+    #myCarousel .item .hr{
+        width: 35%;
+    }
+
+    #myCarousel .one{
+        min-width: 25% !important;
+    }
+    #myCarousel .two{
+        max-width: 50% !important;
+        min-width: 50% !important;
+    }
+    #myCarousel .three{
+        min-width: 25% !important;
+    }
+}
+
+@media screen and (max-width: 370px){
+    #myCarousel .item img{
+        width: 100px;
+    }
+    #myCarousel .item .img{
+        width: 55%;
+    }
+    #myCarousel .item .text{
+        width: 45%;
+    }
+    
+    #myCarousel .item .title{
+        width: 65%;
+    }
+    #myCarousel .item .hr{
+        width: 35%;
+    }
+
+    #myCarousel .one{
+        min-width: 20% !important;
+    }
+    #myCarousel .two{
+        max-width: 60% !important;
+        min-width: 60% !important;
+    }
+    #myCarousel .three{
+        min-width: 20% !important;
+    }
+}

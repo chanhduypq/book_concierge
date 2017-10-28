@@ -1,8 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Country_shippingrates_model extends BF_Model {
+class Book_country_model extends BF_Model {
 
-	protected $table_name	= "country_shipping_rates";
+	protected $table_name	= "country_book";
 	protected $key			= "";
 	protected $soft_deletes	= false;
 	protected $date_format	= "datetime";
@@ -50,4 +50,5 @@ class Country_shippingrates_model extends BF_Model {
 	protected $skip_validation 			= FALSE;
 
 	//--------------------------------------------------------------------
+	
 }

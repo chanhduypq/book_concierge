@@ -75,17 +75,20 @@
 				<li<?php if (!strlen($this->uri->segment(2))) echo ' class="opened active"' ?>>
 					<a href="<?php echo site_url(SITE_AREA.'/'); ?>"><span>Dashboard</span></a>
 				</li>
-				<li<?php if ($this->uri->segment(3) == 'books') echo ' class="opened active"' ?>>
+<!--				<li<?php if ($this->uri->segment(3) == 'books') echo ' class="opened active"' ?>>
 					<a href="<?php echo site_url(SITE_AREA.'/settings/books/featured'); ?>"><span>Featured Books</span></a>	
-				</li>
+				</li>-->
 				<li<?php if ($this->uri->segment(3) == 'bookstores') echo ' class="opened active"' ?>>
 					<a href="<?php echo site_url(SITE_AREA.'/settings/bookstores'); ?>"><span>Bookstores</span></a>	
 				</li>
-				<li>
+<!--				<li>
 					<a href="#"><span>Promotions</span></a>	
-				</li>
+				</li>-->
 				<li>
 					<a href="<?php echo site_url(SITE_AREA.'/settings/shippingrates'); ?>"><span>Shipping Rates</span></a>	
+				</li>
+                                <li>
+					<a href="<?php echo site_url(SITE_AREA.'/settings/advertisement'); ?>"><span>Advertisement</span></a>	
 				</li>
 				<li<?php if ($this->uri->segment(3) == 'localization') echo ' class="opened active"' ?>>
 					<a href="#"><span>Localization</span></a>
