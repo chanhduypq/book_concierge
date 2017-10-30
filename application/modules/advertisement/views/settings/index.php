@@ -1,6 +1,5 @@
 <style>
     textArea{
-        text-indent: -70px;
         height: 100px;
     }
     input[type=file]{
@@ -56,9 +55,7 @@
             <div class="slide_left border_right">
                 <input class="input-small" placeholder="title" type="text" name="slide_title[]" value="<?php echo html_entity_decode($slideTitles[0]);?>" style="width:200px" />
                 <br>
-                <textarea name="slide_content[]" placeholder="content" cols="50" rows="100">
-                    <?php echo $slideContents[0];?>                
-                </textarea>
+                <textarea name="slide_content[]" placeholder="content" cols="20" rows="10"><?php echo $slideContents[0];?></textarea>
                 <br>
                 <?php 
                 if($slideImages[0]!=''){
@@ -73,9 +70,7 @@
             <div class="slide_left border_right">
                 <input class="input-small" placeholder="title" type="text" name="slide_title[]" value="<?php echo html_entity_decode($slideTitles[1]);?>" style="width:200px" />
                 <br>
-                <textarea name="slide_content[]" placeholder="content" cols="50" rows="100">
-                    <?php echo $slideContents[1];?>                
-                </textarea>
+                <textarea name="slide_content[]" placeholder="content" cols="20" rows="10"><?php echo $slideContents[1];?></textarea>
                 <br>
                 <?php 
                 if($slideImages[1]!=''){
@@ -91,9 +86,7 @@
             <div class="slide_left">
                 <input class="input-small" placeholder="title" type="text" name="slide_title[]" value="<?php echo html_entity_decode($slideTitles[2]);?>" style="width:200px" />
                 <br>
-                <textarea name="slide_content[]" placeholder="content" cols="50" rows="100">
-                    <?php echo $slideContents[2];?>                
-                </textarea>
+                <textarea name="slide_content[]" placeholder="content" cols="20" rows="10"><?php echo $slideContents[2];?></textarea>
                 <br>
                 <?php 
                 if($slideImages[2]!=''){
