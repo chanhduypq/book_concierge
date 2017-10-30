@@ -85,19 +85,14 @@ class Home extends CI_Controller
             $slideLinks = array();
             if (is_array($slides) && count($slides) > 0) {
                 foreach ($slides as $slide) {
-                    $slideTitles[] = $slide->title;
-                    $slideContents[] = $slide->content;
-                    $slideImages[] = $slide->image;
-                    $slideLinks[] = $slide->read_more_link;
+                    if (trim($slide->title) != "" && trim($slide->content) != "" && trim($slide->image) != "") {
+                        $slideTitles[] = $slide->title;
+                        $slideContents[] = $slide->content;
+                        $slideImages[] = $slide->image;
+                        $slideLinks[] = $slide->read_more_link;
+                    }
                 }
-            } else {
-                for ($i = 0; $i < 3; $i++) {
-                    $slideTitles[] = '';
-                    $slideContents[] = '';
-                    $slideImages[] = '';
-                    $slideLinks[] = '';
-                }
-            }
+            } 
 
             Template::set('slideTitles', $slideTitles);
             Template::set('slideContents', $slideContents);
@@ -111,10 +106,12 @@ class Home extends CI_Controller
                         $leftTitle = $book->title;
                         $leftImageCurrent = $book->image;
                         $leftAuthor = $book->author;
+                        $leftLink = $book->read_more_link;
                     } else if (strtolower(trim($book->left_right)) == 'right') {
                         $rightTitle = $book->title;
                         $rightImageCurrent = $book->image;
                         $rightAuthor = $book->author;
+                        $rightLink = $book->read_more_link;
                     }
                 }
             } else {
@@ -123,10 +120,13 @@ class Home extends CI_Controller
             Template::set('leftTitle', $leftTitle);
             Template::set('leftImageCurrent', $leftImageCurrent);
             Template::set('leftAuthor', $leftAuthor);
+            Template::set('leftLink', $leftLink);
             Template::set('rightTitle', $rightTitle);
             Template::set('rightImageCurrent', $rightImageCurrent);
             Template::set('rightAuthor', $rightAuthor);
+            Template::set('rightLink', $rightLink);
             Template::set('isHomePage', $this->uri->segment(1) === FALSE);
+            
             
             Template::render();
 	}//end index()

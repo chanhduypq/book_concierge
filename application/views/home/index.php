@@ -1,5 +1,5 @@
 <?php 
-if(trim($slideTitles[0])!=''&&$isHomePage){?>
+if(count($slideTitles)>0&&$isHomePage){?>
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
 
@@ -7,7 +7,8 @@ if(trim($slideTitles[0])!=''&&$isHomePage){?>
     <!-- Wrapper for slides -->
     <div class="carousel-inner left two">
         <?php 
-        for($i=0;$i<3;$i++){?>
+        for($i=0;$i<count($slideTitles);$i++){
+            ?>
             <div class="item<?php if($i==0) echo ' active';?>">
                 <div class="title">
                     <?php echo $slideTitles[$i];?>
@@ -51,9 +52,12 @@ if(trim($slideTitles[0])!=''&&$isHomePage){?>
     <div style="clear: both;"></div>
 
     <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
+        <?php 
+        for($i=0;$i<count($slideTitles);$i++){?>
+        <li data-target="#myCarousel" data-slide-to="<?php echo $i;?>"<?php if($i==0) echo ' class="active"';?>></li>
+        <?php 
+        }
+        ?>
     </ol>
 
 </div>
@@ -70,14 +74,55 @@ if(trim($slideTitles[0])!=''&&$isHomePage){?>
                     <span class="search-header-text">Get the books you want at the lowest price shipped to your door step!</span>            
                 </div>
                 <?php 
-                if($isHomePage&&isset($leftTitle)&&trim($leftTitle)!=""&&isset($leftImageCurrent)&&trim($leftImageCurrent)!=""&&isset($rightTitle)&&trim($rightTitle)!=""&&isset($rightImageCurrent)&&trim($rightImageCurrent)!=""){?>
+                if(
+                        $isHomePage
+                        &&isset($leftTitle)&&trim($leftTitle)!=""
+                        &&isset($leftImageCurrent)&&trim($leftImageCurrent)!=""
+                        &&isset($leftAuthor)&&trim($leftAuthor)!=""
+                        &&isset($rightTitle)&&trim($rightTitle)!=""
+                        &&isset($rightImageCurrent)&&trim($rightImageCurrent)!=""
+                        &&isset($rightAuthor)&&trim($rightAuthor)!=""
+                        ){
+                    if(trim($leftLink)!=''){
+                        $cusorLeft='cursor: pointer;';
+                        if(strpos($leftLink, 'http://')===0){
+                            $leftLink= ltrim($leftLink,'http://');
+                        }
+                        if(strpos($leftLink, 'https://')===0){
+                            $leftLink= ltrim($leftLink,'https://');
+                        }
+                        if(strpos($leftLink, 'www.')===0){
+                            $leftLink= ltrim($leftLink,'www.');
+                        }
+                        $onClickLeft=' onclick="window.location=\'//'.$leftLink.'\';"';
+                    }
+                    else{
+                        $cusorLeft = $onClickLeft = '';
+                    }
+                    if(trim($rightLink)!=''){
+                        $cusorRight='cursor: pointer;';
+                        if(strpos($rightLink, 'http://')===0){
+                            $rightLink= ltrim($rightLink,'http://');
+                        }
+                        if(strpos($rightLink, 'https://')===0){
+                            $rightLink= ltrim($rightLink,'https://');
+                        }
+                        if(strpos($rightLink, 'www.')===0){
+                            $rightLink= ltrim($rightLink,'www.');
+                        }
+                        $onClickRight=' onclick="window.location=\'//'.$rightLink.'\';"';
+                    }
+                    else{
+                        $cusorRight = $onClickRight = '';
+                    }
+                    ?>
                 <div class="position position-left">
-                    <img style="width: 130px;height: 183px;" src="<?php echo '/uploads/country/image/'.$leftImageCurrent ?>" alt="">
+                    <img<?php echo $onClickLeft;?> style="width: 130px;height: 183px;<?php echo $cusorLeft;?>" src="<?php echo '/uploads/country/image/'.$leftImageCurrent ?>" alt="">
                     <div><?php echo $leftTitle;?></div>
                     <div class="italic">By <?php echo $leftAuthor;?></div>
                 </div>
                 <div class="position position-right">
-                    <img style="width: 130px;height: 183px;" src="<?php echo '/uploads/country/image/'.$rightImageCurrent ?>" alt=""/>
+                    <img<?php echo $onClickRight;?> style="width: 130px;height: 183px;<?php echo $cusorRight;?>" src="<?php echo '/uploads/country/image/'.$rightImageCurrent ?>" alt=""/>
                     <div><?php echo $rightTitle;?></div>
                     <div class="italic">By <?php echo $rightAuthor;?></div>
                 </div>
