@@ -27,6 +27,16 @@
 }
 #myCarousel .left label{
     color:#ffaf00;
+    cursor: pointer;
+}
+#myCarousel .left label:hover{
+    background: none repeat scroll 0 0 #FFE6F5;
+    border: 1px solid #FFCFE9;
+    border-radius: 7px 7px 7px 7px;
+    color: #000000;
+    margin: 0 3px;
+    padding: 8px 7px;
+    transition: all 0.3s ease 0s;
 }
 #myCarousel .left p{
     max-width: 350px;

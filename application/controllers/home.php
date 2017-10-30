@@ -82,23 +82,27 @@ class Home extends CI_Controller
             $slideTitles = array();
             $slideContents = array();
             $slideImages = array();
+            $slideLinks = array();
             if (is_array($slides) && count($slides) > 0) {
                 foreach ($slides as $slide) {
                     $slideTitles[] = $slide->title;
                     $slideContents[] = $slide->content;
                     $slideImages[] = $slide->image;
+                    $slideLinks[] = $slide->read_more_link;
                 }
             } else {
                 for ($i = 0; $i < 3; $i++) {
                     $slideTitles[] = '';
                     $slideContents[] = '';
                     $slideImages[] = '';
+                    $slideLinks[] = '';
                 }
             }
 
             Template::set('slideTitles', $slideTitles);
             Template::set('slideContents', $slideContents);
             Template::set('slideImages', $slideImages);
+            Template::set('slideLinks', $slideLinks);
 
             $books = $this->book_country_model->find_all_by("country_iso", $country);
             if (is_array($books) && count($books) > 0) {

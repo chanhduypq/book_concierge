@@ -68,23 +68,27 @@ class settings extends Admin_Controller {
         $slideTitles = array();
         $slideContents = array();
         $slideImages = array();
+        $slideLinks = array();
         if (is_array($slides) && count($slides) > 0) {
             foreach ($slides as $slide) {
                 $slideTitles[] = $slide->title;
                 $slideContents[] = $slide->content;
                 $slideImages[] = $slide->image;
+                $slideLinks[] = $slide->read_more_link;
             }
         } else {
             for ($i = 0; $i < 3; $i++) {
                 $slideTitles[] = '';
                 $slideContents[] = '';
                 $slideImages[] = '';
+                $slideLinks[] = '';
             }
         }
 
         Template::set('slideTitles', $slideTitles);
         Template::set('slideContents', $slideContents);
         Template::set('slideImages', $slideImages);
+        Template::set('slideLinks', $slideLinks);
         
         $books = $this->book_country_model->find_all_by("country_iso", $country);
         if (is_array($books) && count($books) > 0) {
@@ -152,6 +156,7 @@ class settings extends Admin_Controller {
     private function saveSlides() {
         $slideTitles = $this->input->post('slide_title');
         $slideContents = $this->input->post('slide_content');
+        $slideLinks = $this->input->post('read_more_link');
         $slideImageCurrents = $this->input->post('slide_image_current');
         $images = array();
         if (is_array($slideTitles) && count($slideTitles)) {
@@ -173,9 +178,16 @@ class settings extends Admin_Controller {
             $this->slide_model->delete_where("country_iso = '" . $_POST['iso'] . "'");
 
             for ($i = 0; $i < count($slideTitles); $i++) {
+                if(trim($slideLinks[$i])==''){
+                    $link=NULL;
+                }
+                else{
+                    $link=htmlentities(trim($slideLinks[$i]));
+                }
                 $this->slide_model->insert(array(
                     'title' => htmlentities(trim($slideTitles[$i])),
                     'content' => htmlentities(trim($slideContents[$i])),
+                    'read_more_link' => $link,
                     'image' => $images[$i],
                     'country_iso' => $_POST['iso']
                         )

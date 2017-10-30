@@ -22,8 +22,24 @@ if(trim($slideTitles[0])!=''&&$isHomePage){?>
                 <div class="left text">
                     <p>
                         <?php echo $slideContents[$i];?>                        
-                    </p>                          
-                    <label>Read More</label>
+                    </p> 
+                    <?php 
+                    if(trim($slideLinks[$i])!=""){
+                        $link=trim($slideLinks[$i]);
+                        if(strpos($link, 'http://')===0){
+                            $link= ltrim($link,'http://');
+                        }
+                        if(strpos($link, 'https://')===0){
+                            $link= ltrim($link,'https://');
+                        }
+                        if(strpos($link, 'www.')===0){
+                            $link= ltrim($link,'www.');
+                        }
+                        ?>
+                        <label onclick="window.location='//<?php echo $link;?>';">Read More</label>
+                    <?php 
+                    }
+                    ?>
                 </div>
                 <div style="clear: both;"></div>
             </div>
