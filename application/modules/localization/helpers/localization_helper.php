@@ -22,16 +22,24 @@ if (!function_exists('localize_options')) {
 				$countries_loaded = true;
 		}
 		
-		 if (!$countries_loaded) {	
-			$CI->load->model('localization/country_model');
-			$countries_data = $CI->country_model->order_by('group')->order_by('name')->find_all();
-			
-			foreach ($countries_data as $country) {
-				$countries[ucwords($country->group)][$country->iso] = $country->name;
-			}
-			
-			write_file($countries_cache, serialize($countries));
-		}
+//		 if (!$countries_loaded) {	
+//			$CI->load->model('localization/country_model');
+//			$countries_data = $CI->country_model->order_by('group')->order_by('name')->find_all();
+//			
+//			foreach ($countries_data as $country) {
+//				$countries[ucwords($country->group)][$country->iso] = $country->name;
+//			}
+//			
+//			write_file($countries_cache, serialize($countries));
+//		}
+                $CI->load->model('localization/country_model');
+                $countries_data = $CI->country_model->order_by('group')->order_by('name')->find_all();
+
+                foreach ($countries_data as $country) {
+                        $countries[ucwords($country->group)][$country->iso] = $country->name;
+                }
+
+                write_file($countries_cache, serialize($countries));
 		
 		// get currencies
 		$currencies = array();
