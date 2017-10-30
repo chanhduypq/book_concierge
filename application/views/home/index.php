@@ -1,5 +1,5 @@
 <?php 
-if(trim($slideTitles[0])!=''){?>
+if(trim($slideTitles[0])!=''&&$isHomePage){?>
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
 
@@ -48,13 +48,13 @@ if(trim($slideTitles[0])!=''){?>
 <div class="partners clearfix">
     <div class="bgImg-partners">
 
-        <div class="search search-style">
+        <div class="search search-style no-padding-top">
             <div class="search-wrapper">
                 <div class="search-header">
                     <span class="search-header-text">Get the books you want at the lowest price shipped to your door step!</span>            
                 </div>
                 <?php 
-                if(isset($leftTitle)&&trim($leftTitle)!=""&&isset($leftImageCurrent)&&trim($leftImageCurrent)!=""&&isset($rightTitle)&&trim($rightTitle)!=""&&isset($rightImageCurrent)&&trim($rightImageCurrent)!=""){?>
+                if($isHomePage&&isset($leftTitle)&&trim($leftTitle)!=""&&isset($leftImageCurrent)&&trim($leftImageCurrent)!=""&&isset($rightTitle)&&trim($rightTitle)!=""&&isset($rightImageCurrent)&&trim($rightImageCurrent)!=""){?>
                 <div class="position position-left">
                     <img style="width: 130px;height: 183px;" src="<?php echo '/uploads/country/image/'.$leftImageCurrent ?>" alt="">
                     <div><?php echo $leftTitle;?></div>
@@ -80,14 +80,14 @@ if(trim($slideTitles[0])!=''){?>
 
         <div class="partners-wrapper">
             <div class="partners-left">
-                <img src="<?php echo Template::theme_url('images/part-1.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-2.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-3.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-4.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-6.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-7.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-8.png') ?>" alt="">
-                <img src="<?php echo Template::theme_url('images/part-9.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-1.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-2.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-3.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-4.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-6.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-7.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-8.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-9.png') ?>" alt="">
             </div>
             <div class="partners-right">
                 <img src="<?php echo Template::theme_url('images/part-5.png') ?>" alt="">

@@ -1,3 +1,9 @@
+.partners-left img.smaller{
+    max-width: 140px !important;
+}
+.search.search-style.no-padding-top{
+    padding-top: 0px !important;
+}
 .partners {
     min-height: 150px;
     background: #ffa700;

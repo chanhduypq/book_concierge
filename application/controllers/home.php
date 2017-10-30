@@ -50,6 +50,7 @@ class Home extends CI_Controller
 	 */
 	public function index($category='default')
 	{   
+                        
             $available_categories = array('default'=>0, 'children'=>4, 'management'=>3, 'religion'=>22, 'crime'=>18);
             
             if (!array_key_exists($category, $available_categories))
@@ -121,7 +122,8 @@ class Home extends CI_Controller
             Template::set('rightTitle', $rightTitle);
             Template::set('rightImageCurrent', $rightImageCurrent);
             Template::set('rightAuthor', $rightAuthor);
-
+            Template::set('isHomePage', $this->uri->segment(1) === FALSE);
+            
             Template::render();
 	}//end index()
 

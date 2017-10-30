@@ -55,6 +55,7 @@
     float: left;
     width: 45%;
     font-weight: bold;
+    word-wrap: break-word;
 }
 #myCarousel .item .hr{
     float: left;
