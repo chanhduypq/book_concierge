@@ -6,8 +6,9 @@
     min-width: 24%;
 }
 #myCarousel .two{
-    max-width: 38%;
-    min-width: 38%;
+    padding-top: 30px;
+    width: 513px;
+    max-width: 100%;
 }
 #myCarousel .three{
     min-width: 38%;
@@ -15,7 +16,7 @@
 #myCarousel .carousel-indicators{
     left: 43%;
     position: relative !important;
-    margin-top: 50px !important;
+    margin-top: 40px !important;
     /*margin: 0 auto !important;*/
     /*text-align: center !important;*/
 }
@@ -40,64 +41,52 @@
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
-
-#myCarousel .item hr {
-    border-top: 2px solid white;
-    margin-top: 25px;
-    width: 100%;
-    float: right;
-}
 #myCarousel .item img{
     width: 100%;
 }
 #myCarousel .item .title{
+    display: table;
+    table-layout: fixed;
+    position: relative;
     color: white;
     font-size: 25px;
-    float: left;
-    width: 45%;
     font-weight: bold;
     word-wrap: break-word;
 }
-#myCarousel .item .hr{
-    float: left;
-    width: 55%;
-    left: 0;
+#myCarousel .item .title:after{
+    content: '';
+    display: block;
+    position: absolute;
+    top: 58%;
+    transform: translateY(-50%);
+    height: 1.5px;
+    background: #fff;
+    width: 50vw;
+    left: calc(100% + 25px);
 }
-
 #myCarousel .item .img{
-    width: 30%;
+    width: 135px;
+}
+#myCarousel .item .img img{
+    width: 100%;
+    height: auto;
 }
 #myCarousel .item .text{
-    width: 70%;
+    float: right;
+    padding-right: 0;
 }
-
 @media screen and (max-width: 736px){
     #myCarousel .item img{
         width: 100px;
     }
-    #myCarousel .item .img{
-        width: 40%;
-    }
-    #myCarousel .item .text{
-        width: 60%;
-    }
-    
-    #myCarousel .item .title{
-        width: 50%;
-    }
-    #myCarousel .item .hr{
-        width: 50%;
-    }
-    
-    #myCarousel .one{
-        min-width: 25% !important;
+    #myCarousel .one,#myCarousel .three{
+        width: 100%;
+        display: none;
     }
     #myCarousel .two{
-        max-width: 50% !important;
-        min-width: 50% !important;
-    }
-    #myCarousel .three{
-        min-width: 25% !important;
+        max-width: 92%!important;
+        float: none;
+        margin: 0 auto ;
     }
 }
 
@@ -105,58 +94,19 @@
     #myCarousel .item img{
         width: 100px;
     }
-    #myCarousel .item .img{
-        width: 50%;
-    }
     #myCarousel .item .text{
-        width: 50%;
-    }
-    
-    #myCarousel .item .title{
-        width: 65%;
-    }
-    #myCarousel .item .hr{
-        width: 35%;
-    }
-
-    #myCarousel .one{
-        min-width: 25% !important;
-    }
-    #myCarousel .two{
-        max-width: 50% !important;
-        min-width: 50% !important;
-    }
-    #myCarousel .three{
-        min-width: 25% !important;
+        float: left;
     }
 }
-
-@media screen and (max-width: 370px){
-    #myCarousel .item img{
-        width: 100px;
+@media screen and (max-width: 550px){
+     #myCarousel .item img{
+        width: 100px!important;
     }
-    #myCarousel .item .img{
-        width: 55%;
+    #myCarousel .item .left,#myCarousel .item .text{
+        float: none;
+        width: 100%;
     }
-    #myCarousel .item .text{
-        width: 45%;
-    }
-    
-    #myCarousel .item .title{
-        width: 65%;
-    }
-    #myCarousel .item .hr{
-        width: 35%;
-    }
-
-    #myCarousel .one{
-        min-width: 20% !important;
-    }
-    #myCarousel .two{
-        max-width: 60% !important;
-        min-width: 60% !important;
-    }
-    #myCarousel .three{
-        min-width: 20% !important;
+    #myCarousel .item .text p{
+        max-width: 100%;
     }
 }

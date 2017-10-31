@@ -13,12 +13,9 @@ if(count($slideTitles)>0&&$isHomePage){?>
                 <div class="title">
                     <?php echo $slideTitles[$i];?>
                 </div>
-                <div class="hr">
-                    <hr>
-                </div>
-                <div style="clear: both;"></div>
+                <div style="clear: both; padding:0;"></div>
                 <div class="left img">
-                    <img style="width: 133px;height: 178px;" src="<?php echo '/uploads/country/image/slide/'.$slideImages[$i] ?>" alt="">
+                    <img src="<?php echo '/uploads/country/image/slide/'.$slideImages[$i] ?>" alt="">
                 </div>
                 <div class="left text">
                     <p>
@@ -42,7 +39,7 @@ if(count($slideTitles)>0&&$isHomePage){?>
                     }
                     ?>
                 </div>
-                <div style="clear: both;"></div>
+                <div style="clear: both;padding:0;"></div>
             </div>
         <?php 
         }
@@ -117,12 +114,12 @@ if(count($slideTitles)>0&&$isHomePage){?>
                     }
                     ?>
                 <div class="position position-left">
-                    <img<?php echo $onClickLeft;?> style="width: 130px;height: 183px;<?php echo $cusorLeft;?>" src="<?php echo '/uploads/country/image/'.$leftImageCurrent ?>" alt="">
+                    <img<?php echo $onClickLeft;?> style="width: 130px;height: auto;<?php echo $cusorLeft;?>" src="<?php echo '/uploads/country/image/'.$leftImageCurrent ?>" alt="">
                     <div><?php echo $leftTitle;?></div>
                     <div class="italic">By <?php echo $leftAuthor;?></div>
                 </div>
                 <div class="position position-right">
-                    <img<?php echo $onClickRight;?> style="width: 130px;height: 183px;<?php echo $cusorRight;?>" src="<?php echo '/uploads/country/image/'.$rightImageCurrent ?>" alt=""/>
+                    <img<?php echo $onClickRight;?> style="width: 130px;height: auto;<?php echo $cusorRight;?>" src="<?php echo '/uploads/country/image/'.$rightImageCurrent ?>" alt=""/>
                     <div><?php echo $rightTitle;?></div>
                     <div class="italic">By <?php echo $rightAuthor;?></div>
                 </div>
@@ -143,16 +140,17 @@ if(count($slideTitles)>0&&$isHomePage){?>
             <div class="partners-left">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-1.png') ?>" alt="">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-2.png') ?>" alt="">
-                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-3.png') ?>" alt="">
+                <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-5.png') ?>" alt="" style="margin-top: -30px; width: 80px;">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-4.png') ?>" alt="">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-6.png') ?>" alt="">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-7.png') ?>" alt="">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-8.png') ?>" alt="">
                 <img<?php if($isHomePage) echo ' class="smaller"';?> src="<?php echo Template::theme_url('images/part-9.png') ?>" alt="">
+                <img src="<?php echo Template::theme_url('images/part-3.png') ?>" alt="" style="width: 170px; margin-bottom: -10px;">
             </div>
-            <div class="partners-right">
-                <img src="<?php echo Template::theme_url('images/part-5.png') ?>" alt="">
-            </div>
+            <!-- <div class="partners-right">
+                
+            </div> -->
         </div>
     </div>  
 </div>

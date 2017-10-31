@@ -56,7 +56,7 @@
     }
 }*/
 
-@media screen and (max-width: 800px){
+@media screen and (max-width: 736px){
     .position{
         top: auto;
         bottom: 390px;
@@ -103,5 +103,11 @@
         max-height: 200px !important;
         margin-top: 40px !important;
         
+    }
+}
+/*tung*/
+@media (min-width: 737px) and (max-width: 850px){
+    .search-style{
+        width: 55%;
     }
 }
