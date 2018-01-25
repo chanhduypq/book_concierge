@@ -41,12 +41,16 @@ class Bookdepository {
 				class_exists('simple_html_dom_node') or require_once(APPPATH.'third_party/simple_html_dom.php');
 			
 				$targetUrl = "http://www.bookdepository.com/".createSlug($book_details->name)."/".$itemId."?utm_term=".$itemId."&utm_source=book_link&utm_content=".createSlug($book_details->name);
-				$html = file_get_html($targetUrl);
+//				$html = file_get_html($targetUrl);
+                                $html = file_get_contents($targetUrl);
 				
 				$price = 0;
 				
 				if ($html)
 				{
+                                    $html_base = new simple_html_dom();
+                                    $html_base->load($html);
+                                    $html = $html_base;
                                             /////////////// Price Extaction Code Begins /////////////////
                                        $pricecontainer=$html->find('div[class="item-info-wrap"]',0);
                                        

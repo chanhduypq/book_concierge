@@ -20,14 +20,22 @@ class Whsmith
     
     public function fetchPrice($isin)
     {
-        $scrapurl="http://www.whsmith.co.uk/products/noisy-pets/".$isin;        
-        $url="http://3a6a88b4826b4d6d805aad8cd1b413c1:@proxy.crawlera.com/fetch?url=".$scrapurl;        
-        $html=file_get_html($url);
+        $CI =& get_instance();
+        $CI->load->model('books_model', null, true);
+        $details = $CI->books_model->find($isin);
+        $slug=createSlug($details->name);
+//        $scrapurl="http://www.whsmith.co.uk/products/noisy-pets/".$isin;
+        $scrapurl="https://www.whsmith.co.uk/products/$slug/".$isin;        
+        $url="http://3a6a88b4826b4d6d805aad8cd1b413c1:@proxy.crawlera.com/fetch?url=".$scrapurl; 
+//        $html=file_get_html($url);
+        $html= file_get_contents($url);
         $defaultcurrency="GBP";       
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$scrapurl;  
-            
         if($html)
         { 
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             $stock=$html->find('p[id="stock_status"]',0)->plaintext;
             $rectext=$html->find('span[class="price"]',0);
             $pricetext=$rectext->plaintext; 

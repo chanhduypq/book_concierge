@@ -20,16 +20,20 @@ class Selectbooks
     
     public function fetchPrice($isin)
     {
+        
         $siteurl="http://www.selectbooks.com.sg/";
         $defaultcurrency="SGD";
         $url="http://www.selectbooks.com.sg/SearchResults.aspx?strt=1&keywords=".$isin;
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
         //echo "<br>".$url."<br>";
-        
         if($html)
         {
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             $data=$html->find('font[face="Verdana,\'Arial Black\',Arial,sans-serif"]');
             $text=$data[0]->plaintext;
             if(strpos($text, "Search Results: Found 0 matches")===FALSE)
@@ -43,9 +47,13 @@ class Selectbooks
                         }
                     }
                     $nexturl=$siteurl.$nexturl;
-                    $nexthtml=file_get_html($nexturl);
+//                    $nexthtml=file_get_html($nexturl);
+                    $nexthtml=file_get_contents($nexturl);
                     if($nexthtml)
                     {
+                        $html_base = new simple_html_dom();
+                        $html_base->load($nexthtml);
+                        $nexthtml = $html_base;
                         $pricecontent=$nexthtml->find('div[id="mainDiv"]',0)->find('table',0)->find('table',0)->find('p',0);
                         $para=trim($pricecontent->plaintext);
                         $arr =  explode("*)", $para);

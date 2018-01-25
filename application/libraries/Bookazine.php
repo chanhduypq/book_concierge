@@ -26,7 +26,11 @@ class Bookazine
         $defaultcurrency="USD";   
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html = file_get_html('https://orders.bookazine.com/cgi-bin/bvrtSearch?act=search&stockType=NEW&subAct=search&searchType=ISBN&topSearch='.$isin);
+//        $html = file_get_html('https://orders.bookazine.com/cgi-bin/bvrtSearch?act=search&stockType=NEW&subAct=search&searchType=ISBN&topSearch='.$isin);
+        $html = file_get_contents('https://orders.bookazine.com/cgi-bin/bvrtSearch?act=search&stockType=NEW&subAct=search&searchType=ISBN&topSearch='.$isin);
+        $html_base = new simple_html_dom();
+        $html_base->load($html);
+        $html = $html_base;
        
         $rectext=$html->find('div[class="dropShadow"]',0);
         

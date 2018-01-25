@@ -25,10 +25,14 @@ class Shopinhk
         $defaultcurrency="HKD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
         //echo "<br>".$url."<br>";
         if($html)
         {
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             $data=$html->find('a[class="product-title"]');
             $newurl=$data[0]->href;
            

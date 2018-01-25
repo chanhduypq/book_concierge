@@ -25,11 +25,15 @@ class Pollubooks
         $defaultcurrency="HKD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
         //echo "<br>".$url."<br>";
         
         if($html)
         {
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             $data=$html->find('a[class="TrackLink"]');  
             $text=$data[0]->href;
            
@@ -37,9 +41,13 @@ class Pollubooks
             {  
                     $nexturl=$text;
                     //echo "Text=".$text;
-                    $nexthtml=file_get_html($nexturl);
+//                    $nexthtml=file_get_html($nexturl);
+                    $nexthtml=file_get_contents($nexturl);
                     if($nexthtml)
                     {
+                        $html_base = new simple_html_dom();
+                        $html_base->load($nexthtml);
+                        $nexthtml = $html_base;
                         $pricecontent=$nexthtml->find('em[class="ProductPrice VariationProductPrice"]',0);
                         $pricetext=trim($pricecontent);
                         $pricetext=  str_replace("$", "", $pricetext);                        

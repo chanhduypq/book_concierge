@@ -25,11 +25,16 @@ class Booksamillion
         $defaultcurrency="USD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);       
-        //echo "Url=".$url;
-       
+//        $html=file_get_html($url);     
+        $html= file_get_contents($url);     
+        
         if($html)
         { 
+            
+                $html_base = new simple_html_dom();
+                $html_base->load($html);
+                $html = $html_base;
+
                 $prcdiv=$html->find('span[class="details-title-text"]',1);
                 $prtext=$prcdiv->find('strong',0)->plaintext;
 
@@ -97,6 +102,7 @@ class Booksamillion
         
         $retarr[$isin][]=array('price'=>$this->price,'currency'=>$this->currency,'condition'=>$this->condition,
                       'target_url'=>$this->targeturl,'delivery'=>$this->delivery);
+        //echo "Url=".$url;
         //print_r($retarr);
         return $retarr;
     }

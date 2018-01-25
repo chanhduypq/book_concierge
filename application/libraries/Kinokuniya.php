@@ -21,9 +21,13 @@ class Kinokuniya {
 		$price = 0;
 		$delivery = 'Usually dispatches within 3 - 4 weeks.';
 		
-		$html = file_get_html($url);
+//		$html = file_get_html($url);
+                $html = file_get_contents($url);
 		
 		if ($html) {
+                    $html_base = new simple_html_dom();
+                    $html_base->load($html);
+                    $html = $html_base;
 			foreach ($html->find('div[class="dContent"]') as $content) {
 				foreach($content->find('li[class="price"]') as $element) {
 					if (strstr($element->plaintext, 'Online Price')) {

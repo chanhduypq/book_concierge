@@ -24,9 +24,13 @@ class Dymocks
         $defaultcurrency="AUD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
         if($html)
         { 
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             
                 $content=$html->find('h1[class="small_heading product_h1-color"]',0);
                 $text=$content->plaintext;

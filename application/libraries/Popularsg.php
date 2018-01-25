@@ -32,10 +32,15 @@ class Popularsg
         $defaultcurrency="SGD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
         //echo "<br>".$url."<br>";
+       
+        $html= file_get_contents($url);
         if($html)
         {
+            $html_base = new simple_html_dom();
+                $html_base->load($html);
+                $html = $html_base;
             $data=$html->find('p[class="note-msg"]');
             if(count($data)<=0)
             {
@@ -45,10 +50,14 @@ class Popularsg
                     {
                         $nexturl=$link->href;
                     }
-                    $nexthtml=file_get_html($nexturl);
+//                    $nexthtml=file_get_html($nexturl);
+                    $nexthtml=file_get_contents($nexturl);
 
                     if($nexthtml)
                     {
+                        $html_base = new simple_html_dom();
+                        $html_base->load($nexthtml);
+                        $nexthtml = $html_base;
                         $pricecontent=$nexthtml->find('div[class="price-box"]');
 
                         foreach ($pricecontent[0]->find('span[class="price"]') as $span)
@@ -120,6 +129,7 @@ class Popularsg
         $retarr[$isin][]=array('price'=>$this->price,'currency'=>$this->currency,'condition'=>$this->condition,
                       'target_url'=>$this->targeturl,'delivery'=>$this->delivery);
         //print_r($retarr);
+        
         return $retarr;
         
     }

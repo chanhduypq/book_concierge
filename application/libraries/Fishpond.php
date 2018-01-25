@@ -24,9 +24,13 @@ class Fishpond
         $defaultcurrency="USD";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
         if($html)
         { 
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
                 $content=$html->find('div[class="add_button_container"]');
                 foreach($content[0]->find('b') as $bold)
                 {

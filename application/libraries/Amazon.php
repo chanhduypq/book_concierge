@@ -195,9 +195,13 @@ class Amazon {
 					class_exists('simple_html_dom_node') or require_once(APPPATH.'third_party/simple_html_dom.php');
 
 					$targetUrl = $u.'?tag='.$this->AWS_ASSOCIATE_ID;		
-					$html = file_get_html($targetUrl);
+//					$html = file_get_html($targetUrl);
+                                        $html= file_get_contents($targetUrl);
 					
 					if ($html) {
+                                            $html_base = new simple_html_dom();
+                                            $html_base->load($html);
+                                            $html = $html_base;
 						foreach ($html->find('b[class="priceLarge"]') as $node)
 						{		
 							$price = str_replace(array("$", ","),"",$node->plaintext); //$result->Amount/100;

@@ -25,10 +25,14 @@ class Gogoodbooks
         $defaultcurrency="GBP";
         $price=0;  $stock='';  $currency=$defaultcurrency;  $condition='new';  $delivery='';    $targeturl=$url; 
         
-        $html=file_get_html($url);
+//        $html=file_get_html($url);
+        $html=file_get_contents($url);
        
         if($html)
         {
+            $html_base = new simple_html_dom();
+            $html_base->load($html);
+            $html = $html_base;
             $response=json_decode($html);
             $record=$response->Count;
             if($record)
