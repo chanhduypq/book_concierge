@@ -39,6 +39,33 @@ function search_API_by_ISBN($isbn, $orBy=null) {
 	return false;
 }
 
+function search_on_Bookdepository($isbn, $user_ip) {
+	$CI =& get_instance();
+        
+	$CI->load->library('bookdepository');
+	$data = $CI->bookdepository->fetchPrice($isbn, $user_ip);
+	if ($data && count($data)==1) {
+		$CI->load->model('books/books_model');
+                $row=$data["$isbn"][0];
+                unset($row['price']);
+                unset($row['currency']);
+                unset($row['condition']);
+                unset($row['target_url']);
+                unset($row['delivery']);                
+                $row['ean']=$row['isbn']=$isbn;
+                $row['book_format']='book';
+		$CI->books_model->insert($row);
+		
+		$result = new stdClass;
+		$result->ean = $row['ean'];
+		$result->name = $row['name'];
+		
+		return $result;
+	}
+	
+	return false;
+}
+
 function search_API_by_Keywords($keywords) {
 	$CI =& get_instance();
 	

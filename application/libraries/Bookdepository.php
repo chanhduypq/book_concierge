@@ -33,7 +33,6 @@ class Bookdepository {
 		if ($scrap) {
 			$this->CI->load->model('books/books_model');
 			$book_details = $this->CI->books_model->find($itemId);
-			
 			if ($book_details) {
 			
 				$this->CI->load->helper('books/books');
@@ -82,6 +81,37 @@ class Bookdepository {
 
                                             if (strlen($this->BD_ASSOCIATE_ID))
                                             $targetUrl=str_replace("?","?utm_medium=api&utm_campaign=".$this->ACCESS_KEY_ID."&a_aid=".$this->BD_ASSOCIATE_ID."&", $targetUrl);
+                                            $ul=$html->find('ul[class="biblio-info"]',0);
+                                            $lis=$ul->find('li');
+                                            foreach ($lis as $li){
+                                                $label=$li->find('label',0)->plaintext;
+                                                $span=trim($li->find('span',0)->plaintext);
+                                                if(trim($label)=='Language'){
+                                                    $language=$span;
+                                                }
+                                                else if(trim($label)=='Publisher'){
+                                                    $publisher=$span;
+                                                }
+                                                else if(trim($label)=='Publication City/Country'){
+                                                    $publication=$span;
+                                                }
+                                                else if(trim($label)=='Dimensions'){
+                                                    list($dimensions,$weigth)= explode("|", $span);
+                                                    $weigth=preg_replace('/[^0-9\.]/', '', $weigth);
+                                                    $weigth= intval($weigth);
+                                                    $dimensions=trim($dimensions);
+                                                    list($length,$width,$height)= explode("x", $dimensions);
+                                                    $length=trim($length);
+                                                    $width=trim($width);
+                                                    $height=preg_replace('/[^0-9]/', '', $height);
+                                                    
+                                                }
+                                            }
+                                            $h1=$html->find('h1[itemprop="name"]',0);
+                                            if($h1){
+                                                $name=$h1->plaintext;
+                                            }
+                                            
                                        }
 				}
 				
@@ -91,12 +121,19 @@ class Bookdepository {
                                             'currency'=>'USD',
                                             'condition'=>'new',
                                             'target_url'=>$targetUrl,
-                                            'delivery'=>$dtime
+                                            'delivery'=>$dtime,
+                                            'name'=> isset($name)?$name:NULL,
+                                            'language'=> isset($language)?$language:NULL,
+                                            'height'=>isset($height)?$height:NULL,
+                                            'length'=>isset($length)?$length:NULL,
+                                            'width'=>isset($width)?$width:NULL,
+                                            'weight'=>isset($weigth)?$weigth:NULL,
+                                            'publisher'=>isset($publisher)?$publisher:NULL,
+                                            'publication'=>isset($publication)?$publication:NULL,
                                         );
 				}
 			}
 		}
-		
 		if (count($response))
                     return $response;
                 else

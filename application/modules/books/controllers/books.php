@@ -187,8 +187,8 @@ class books extends Front_Controller
 	{
 		$details = $this->books_model->find($isbn);
 		if (empty($details)) {
-                    $details = search_API_by_ISBN($isbn);
-                    
+//                    $details = search_API_by_ISBN($isbn);
+                    $details = search_on_Bookdepository($isbn,$_SERVER['REMOTE_ADDR']);  
                     if (empty($details))
                         show_404();
 		}
@@ -427,7 +427,8 @@ class books extends Front_Controller
 		$this->load->model('books_prices_model');
 		
 		$this->books_prices_model->where('engine', $store->id)->delete($isbn);
-		
+//		echo $lib;
+//                exit;
 		$price_data = $this->$lib->fetchPrice($isbn, $user_ip);
 		$store_price = new stdClass;		
 		if (isset($price_data[$isbn]) && is_array($price_data[$isbn])) {
