@@ -1,0 +1,3 @@
+Client Id: 64c787ea
+Affiliate Id: bookconc-20
+API Key: 97990d4a5d4ff3837494d6945d12b2be393aa70c
