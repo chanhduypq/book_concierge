@@ -350,7 +350,7 @@ class books extends Front_Controller
 		}
 		
 		$store_prices = get_book_prices($isbn);
-		
+                
 		$count = 0;
 		$api = array();
 		if (is_array($stores)) {
@@ -374,7 +374,7 @@ class books extends Front_Controller
 			
 			$store_prices = get_book_prices($isbn);
 		}
-		
+                
 		//print_r($r);
 		
 		if (!empty($store_prices) && count($store_prices)) {
@@ -413,7 +413,6 @@ class books extends Front_Controller
 	public function fetchPrice($isbn, $lib, $user_ip)
 	{
 		// TO DO: validate if referrer is the server itself
-		
 		if (empty($lib))
 			exit;
 		
@@ -427,14 +426,18 @@ class books extends Front_Controller
 		$this->load->model('books_prices_model');
 		
 		$this->books_prices_model->where('engine', $store->id)->delete($isbn);
-//		echo $lib;
-//                exit;
 		$price_data = $this->$lib->fetchPrice($isbn, $user_ip);
+                
 		$store_price = new stdClass;		
 		if (isset($price_data[$isbn]) && is_array($price_data[$isbn])) {
 			$processed = array();
 			foreach ($price_data[$isbn] as $price) {
 				if (!isset($processed[$price['condition']]) || !in_array($isbn, $processed[$price['condition']])) {
+                                    if (trim($lib) == 'bookdepository') {
+                                        $price['delivery'] = ltrim($price['delivery'],"Available");
+                                        $price['delivery'] = ltrim($price['delivery'],".");
+                                        $price['delivery'] = trim($price['delivery']);
+                                    }
 					$this->books_prices_model->insert(array(
 							'ean'		=> $isbn,
 							'engine'	=> $store->id,
@@ -460,7 +463,7 @@ class books extends Front_Controller
 					'condition'	=> 'new',
 					'currency'	=> 'USD'
 			));
-		}	
+		}
 	}	
         
         public function fetchMissingBestsellers()
