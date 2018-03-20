@@ -9,8 +9,12 @@ class Bookdepository {
 	
 	private $ItemId;
 	private $userIP;
+        
+        private $CLIENT_ID = '64c787ea';
+        private $AFFILIATE_ID = 'bookconc-20';
+        private $API_KEY = '97990d4a5d4ff3837494d6945d12b2be393aa70c';
 
-	// --------------------------------------------------------------------
+    // --------------------------------------------------------------------
 
 	public function __construct($config = array())
 	{
@@ -21,8 +25,104 @@ class Bookdepository {
 		$this->SECRET_ACCESS_KEY = $this->CI->config->item('BD_SECRET_ACCESS_KEY');
 		$this->BD_ASSOCIATE_ID = $this->CI->config->item('BD_ASSOCIATE_ID');
 	}
+        
+        public function fetchPrice($itemId, $user_ip)
+	{
+		$response = array();
+		
+		$this->userIP = $user_ip;
+		
+		$this->CI->load->library('settings/settings_lib');
+		$scrap = (int)$this->CI->settings_lib->item('site.scrap_bookdepository');
+		if ($scrap) {
+			$this->CI->load->model('books/books_model');
+			$book_details = $this->CI->books_model->find($itemId);
+			if ($book_details) {
+				$this->CI->load->helper('books/books');
+				
+				class_exists('simple_html_dom_node') or require_once(APPPATH.'third_party/simple_html_dom.php');
+			
+                                $xmlContent= file_get_contents("https://api.bookdepository.com/search/lookup?clientId=".$this->CLIENT_ID."&authenticationKey=".$this->API_KEY."&IP=$user_ip&isbn13=$itemId");
+                                
+				$price = 0;
+                                
+                                $xmlContent = simplexml_load_string($xmlContent);
+                                
+                                $targetUrl='';
+
+                                if (is_object($xmlContent)) {
+                                    $items = $xmlContent->items->item;
+                                    foreach ($items as $item) {
+
+                                        $attrs = $item->pricing->price->attributes();
+                                        $attrs = (array) $attrs;
+                                        $currency = $attrs['@attributes']['currency'];
+                                        if (isset($item->pricing->price->selling)){
+                                            $price = (float)$item->pricing->price->selling;
+                                        }
+						
+					else{
+                                            $price = (float)$item->pricing->price->retail ? (float)$item->pricing->price->retail : 0;
+                                        }
+                                        
+                                        if (isset($item->url)){
+                                            $targetUrl = $item->url;
+                                            $targetUrl = (array) $targetUrl;
+                                            $targetUrl = $targetUrl[0];
+                                        }
+                                        if (isset($item->biblio->title)){
+                                            $name = $item->biblio->title;
+                                        }
+                                        if (isset($item->availability)){
+                                            $availability = $item->availability;
+                                        }
+						
+                                    }
+                                    
+                                    
+                                    $response[$itemId][] = array(
+                                            'price'=>$price,
+                                            'currency'=>$currency,
+                                            'condition'=>'new',
+                                            'target_url'=>$targetUrl,
+                                            'delivery'=>isset($availability)?$availability:NULL,
+                                            'name'=> isset($name)?$name:NULL,
+                                            'language'=> isset($language)?$language:NULL,
+                                            'height'=>isset($height)?$height:NULL,
+                                            'length'=>isset($length)?$length:NULL,
+                                            'width'=>isset($width)?$width:NULL,
+                                            'weight'=>isset($weigth)?$weigth:NULL,
+                                            'publisher'=>isset($publisher)?$publisher:NULL,
+                                            'publication'=>isset($publication)?$publication:NULL,
+                                        );
+                                }
+				
+				
+			}
+		}
+		if (count($response)){
+                    return $response;
+                }
+                    
+                else{
+                    // no API available, return blank for now
+                    return array(
+                        'price'=>false,
+                        'currency'=>'',
+                        'condition'=>'new',
+                        'target_url'=>'',
+                        'delivery'=>''
+                    );
+                }
+                    
+		
+		
+	}
 	
-	public function fetchPrice($itemId, $user_ip)
+	/*
+         * backup
+         *
+        public function fetchPrice($itemId, $user_ip)
 	{
 		$response = array();
 		
@@ -184,7 +284,7 @@ class Bookdepository {
 		}
 		
 		return $response;
-	}
+	}*/
 	
 	private function process() {
 		$url = 'http://api.bookdepository.com/search/lookup?clientId='.$this->ACCESS_KEY_ID.'&authenticationKey='.$this->SECRET_ACCESS_KEY.'&IP='.$this->userIP.'&isbn13='.$this->ItemId.'&currencies=SGD';
@@ -210,7 +310,7 @@ class Bookdepository {
 		
 		return true;
 	}
-
+        
 	// --------------------------------------------------------------------
 
 }

@@ -28,6 +28,8 @@ class books extends Front_Controller
 
 		//Assets::add_module_js('books', 'books.js');
 		Assets::add_module_css('books', 'books.css');
+                
+                
 	}
 	
 	public function index()
@@ -434,9 +436,9 @@ class books extends Front_Controller
 			foreach ($price_data[$isbn] as $price) {
 				if (!isset($processed[$price['condition']]) || !in_array($isbn, $processed[$price['condition']])) {
                                     if (trim($lib) == 'bookdepository') {
-                                        $price['delivery'] = ltrim($price['delivery'],"Available");
-                                        $price['delivery'] = ltrim($price['delivery'],".");
                                         $price['delivery'] = trim($price['delivery']);
+                                        $price['delivery'] = ltrim($price['delivery'],"Available - ");
+                                        $price['delivery'] = ucfirst($price['delivery']);                                
                                     }
 					$this->books_prices_model->insert(array(
 							'ean'		=> $isbn,
