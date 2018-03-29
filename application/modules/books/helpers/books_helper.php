@@ -43,10 +43,12 @@ function search_on_Bookdepository($isbn, $user_ip) {
 	$CI =& get_instance();
         
 	$CI->load->library('bookdepository');
-	$data = $CI->bookdepository->fetchPrice($isbn, $user_ip);
+//	$data = $CI->bookdepository->fetchPrice($isbn, $user_ip);
+        $data = $CI->bookdepository->fetch($isbn);
 	if ($data && count($data)==1) {
 		$CI->load->model('books/books_model');
-                $row=$data["$isbn"][0];
+//                $row=$data["$isbn"][0];
+                $row=$data[0];
                 unset($row['price']);
                 unset($row['currency']);
                 unset($row['condition']);

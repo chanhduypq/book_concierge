@@ -26,6 +26,110 @@ class Bookdepository {
 		$this->BD_ASSOCIATE_ID = $this->CI->config->item('BD_ASSOCIATE_ID');
 	}
         
+        public function fetch($items) {
+		
+		$xmlContent= file_get_contents("https://api.bookdepository.com/search/lookup?clientId=".$this->CLIENT_ID."&authenticationKey=".$this->API_KEY."&IP=".$_SERVER['REMOTE_ADDR']."&isbn13=$items");
+
+                $xmlin = simplexml_load_string($xmlContent);
+		$response = array();
+		
+		if (is_object($xmlin)) {
+			$items = $xmlin->items->item;
+			foreach ($items as $item){						
+				
+				$data = $this->extractData($item,$xmlin);
+
+                                $additional = array('cdn_image'=>'-');
+				
+				$response[] = array_merge($data, $additional);
+			}
+		}
+		
+		// set hardcopy_ean if there are any ebooks
+		$i = 0;
+		foreach ($response as &$data) {
+			if ($i) {
+				$previous = $response[$i-1];
+				if ($data['book_format'] == 'ebook')
+					$data['hardcopy_ean'] = $previous['ean'];
+			}	
+			$i++;
+		}
+		
+		return $response;
+	}
+        
+        private function extractData($item,$xmlin) {
+		if (!$item)
+			return array();
+		
+		$authors = array();
+		if (isset($item->contributors->contributor)) {
+			foreach($item->contributors->contributor as $author) {
+				$authors[] = (string)$author->name;
+			}
+		}
+		
+		$languages = array();
+		
+		$book_data = array(
+			'ean'			=> (string)$item->identifiers->isbn13,
+			'isbn'			=> (string)$item->identifiers->isbn13,
+			'ASIN'			=> '',
+			'name'			=> (string)$item->biblio->title,
+			'author'		=> implode(', ', $authors),
+			'manufacturer'	        => '',
+			'publisher'		=> '',
+			'publication'	        => '',
+			'pages'			=> isset($xmlin->resultset->totalPages) ? (string)$xmlin->resultset->totalPages : '',
+			'binding'		=> '',
+			'label'			=> '',
+			'studio'		=> '',
+			'height'		=> 0,
+			'length'		=> 0,
+			'width'			=> 0,
+			'weight'		=> 0,
+			'language'		=> implode(', ', $languages),
+			'book_format'	        => (string)$item->biblio->format
+		);
+		
+//		if (isset($item->EditorialReviews->EditorialReview->Content)) {
+//			$book_data['description'] = html_entity_decode((string)$item->EditorialReviews->EditorialReview->Content);
+//		}
+                $book_data['description'] = '';
+
+                if (strlen($book_data['manufacturer']) > 255) {
+			if (!isset($book_data['description']) || empty($book_data['description']))
+				$book_data['description'] = $book_data['manufacturer'];
+			
+			$book_data['manufacturer'] = '';
+		}
+		
+		if (strlen($book_data['publisher']) > 255) {
+			if (!isset($book_data['description']) || empty($book_data['description']))
+				$book_data['description'] = $book_data['publisher'];
+			
+			$book_data['publisher'] = '';
+		}
+		
+		if (strlen($book_data['label']) > 255) {
+			if (!isset($book_data['description']) || empty($book_data['description']))
+				$book_data['description'] = $book_data['label'];
+			
+			$book_data['label'] = '';
+		}
+		
+		if (strlen($book_data['studio']) > 255) {
+			if (!isset($book_data['description']) || empty($book_data['description']))
+				$book_data['description'] = $book_data['studio'];
+			
+			$book_data['studio'] = '';
+		}
+		
+		
+		return $book_data;
+	}
+        
         public function fetchPrice($itemId, $user_ip)
 	{
 		$response = array();
